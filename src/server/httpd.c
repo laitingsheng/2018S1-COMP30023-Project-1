@@ -18,8 +18,18 @@ void respond(int sockfd, char *rootdir) {
         /* set string ending */
         buff[re] = 0;
 
+        /* parse the request */
         char *method = strtok(buff, " \t\r\n"), *uri = strtok(NULL, " \t"),
              *protocal = strtok(NULL, " \t\r\n");
+
+        /* check if query string is passed as well */
+        char *q = strchr(uri, '?');
+        if(qm)
+            /* if there is one, split the uri */
+            *q++ = 0;
+        else
+            /* empty query string */
+            q = "";
     }
 
     free(buff);
