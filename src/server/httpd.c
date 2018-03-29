@@ -1,5 +1,6 @@
 #include "httpd.h"
 #include "macros.h"
+#include "MIME.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +25,7 @@ void respond(int sockfd, char *rootdir) {
 
         /* check if query string is passed as well */
         char *q = strchr(uri, '?');
-        if(qm)
+        if(q)
             /* if there is one, split the uri */
             *q++ = 0;
         else

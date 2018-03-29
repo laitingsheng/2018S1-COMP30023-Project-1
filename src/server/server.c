@@ -9,7 +9,7 @@
 
 void serve(unsigned int port, const char *path) {
     /* create TCP socket */
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(sockfd < 0) {
 		perror("ERROR: cannot open socket");
         exit(1)
