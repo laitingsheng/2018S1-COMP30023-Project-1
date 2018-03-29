@@ -2,7 +2,7 @@
 #define _MACRO_H_
 
 #define PORT 80
-#define PATH "/home/www/"
+#define PATH "/home/www"
 
 #define BUFFER_SIZE 65536
 

@@ -12,13 +12,13 @@ void respond(int sockfd, const char *rootdir) {
     char *buff = malloc(BUFFER_SIZE);
     int re = read(sockfd, buff, BUFFER_SIZE - 1);
     if(re < 0) {
-        perror("ERROR: cannot read from socket");
+        perror("ERROR");
         free(buff);
         exit(EXIT_FAILURE);
     }
 
     if(re == 0)
-        fprintf(stderr, "WARNING: client disconneted");
+        fprintf(stderr, "WARNING: client disconneted\n");
     else {
         /* set string ending */
         buff[re] = 0;
@@ -35,15 +35,16 @@ void respond(int sockfd, const char *rootdir) {
         }
 
         /* get the path of the file */
-        int lr = strlen(rootdir);
-        strcpy(buff, rootdir);
-        strcpy(buff + lr, uri);
-        path[lr + strlen(uri)] = 0;
+        int lr = strlen(rootdir), lu = strlen(uri);
+        char path[lr + lu + 1];
+        strcpy(path, rootdir);
+        strcpy(path + lr, uri);
+        buff[lr + lu] = 0;
 
         /* try to open the file */
-        struct FILE *f = fopen(buff, "r");
+        FILE *f = fopen(path, "r");
         if(!f) {
-            perror("ERROR:, cannot open file %d\n", buff);
+            perror(path);
 
             /* output 404 error */
             write(sockfd, "HTTP/1.0 404 Not Found\n", 23);
@@ -51,8 +52,8 @@ void respond(int sockfd, const char *rootdir) {
             exit(EXIT_FAILURE);
         }
 
-        write(sockfd, "HTTP/1.0 200 OK", 19);
-        while((re = fread(buff, 1, BUFFER_SIZE, f)) != EOF)
+        write(sockfd, "HTTP/1.0 200 OK\n", 19);
+        while((re = fread(buff, 1, BUFFER_SIZE, f)) > 0)
             write(sockfd, buff, re);
     }
 
