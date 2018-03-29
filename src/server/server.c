@@ -10,6 +10,10 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
+#ifdef _PTHREAD
+#include <pthread.h>
+#endif
+
 void serve(unsigned int port, const char *path) {
     /* create TCP socket */
     int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -36,6 +40,9 @@ void serve(unsigned int port, const char *path) {
     struct sockaddr_in cli_addr;
     int newsockfd, clilen = sizeof(cli_addr), pid;
     while(true) {
+#ifdef _PTHREAD
+        printf("\n");
+#else
         /* accept client connection */
         newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if(newsockfd < 0) {
@@ -54,7 +61,8 @@ void serve(unsigned int port, const char *path) {
         else {
             close(sockfd);
             respond(newsockfd, path);
-            exit(EXIT_SUCCESS);
+            _exit(EXIT_SUCCESS);
         }
+#endif
     }
 }
