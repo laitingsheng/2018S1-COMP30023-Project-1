@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "macros.h"
+#include "macros/default.h"
 #include "server/server.h"
 
 int main(int argc, char *argv[]) {

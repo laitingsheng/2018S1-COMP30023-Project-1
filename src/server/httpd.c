@@ -1,6 +1,6 @@
 #include "httpd.h"
-#include "macros.h"
-#include "MIME.h"
+#include "../macros/default.h"
+#include "../macros/MIME.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,10 +42,11 @@ void respond(int sockfd, const char *rootdir) {
             perror("ERROR:, cannot open file %d\n", buff);
 
             /* output 404 error */
-            sprintf();
-            write(sockfd);
+            write(sockfd, "HTTP/1.0 404 Not Found\n", 24);
             return;
         }
+
+        while((re = fread(buff, 1, )))
     }
 
     free(buff);
