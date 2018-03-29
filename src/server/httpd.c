@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void respond(int sockfd, char *rootdir) {
+void respond(int sockfd, const char *rootdir) {
     /* read bytes into buffer */
     char *buff = malloc(BUFFER_SIZE + 1);
     int re = read(sockfd, buff, BUFFER_SIZE);
@@ -20,17 +20,32 @@ void respond(int sockfd, char *rootdir) {
         buff[re] = 0;
 
         /* parse the request */
-        char *method = strtok(buff, " \t\r\n"), *uri = strtok(NULL, " \t"),
-             *protocal = strtok(NULL, " \t\r\n");
+        char *method = strtok(buff, " "), *uri = strtok(NULL, " ");
 
-        /* check if query string is passed as well */
-        char *q = strchr(uri, '?');
-        if(q)
-            /* if there is one, split the uri */
-            *q++ = 0;
-        else
-            /* empty query string */
-            q = "";
+        /* simple GET method */
+        if(strcmp(method, "GET")) {
+            fprintf(stderr, "WARNING: not a GET method\n");
+
+            /* send the index.html instead */
+            uri = "/index.html";
+        }
+
+        /* get the path of the file */
+        int lr = strlen(rootdir);
+        strcpy(buff, rootdir);
+        strcpy(buff + lr, uri);
+        path[lr + strlen(uri)] = 0;
+
+        /* try to open the file */
+        struct FILE *f = fopen(buff, "r");
+        if(!f) {
+            perror("ERROR:, cannot open file %d\n", buff);
+
+            /* output 404 error */
+            sprintf();
+            write(sockfd);
+            return;
+        }
     }
 
     free(buff);
