@@ -4,6 +4,6 @@
 #define PORT 80
 #define PATH "/home/www/"
 
-#define BUFFER_SIZE 65535
+#define BUFFER_SIZE 65536
 
 #endif

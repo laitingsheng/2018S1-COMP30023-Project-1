@@ -12,7 +12,7 @@ void serve(unsigned int port, const char *path) {
     int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(sockfd < 0) {
 		perror("ERROR: cannot open socket");
-        exit(1)
+        exit(EXIT_FAILURE);
     }
 
     /* initialise socket structure */
@@ -25,7 +25,7 @@ void serve(unsigned int port, const char *path) {
     /* bind the host address */
     if(bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR: cannot bind");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     /* starting listening */
@@ -37,21 +37,21 @@ void serve(unsigned int port, const char *path) {
         newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if(newsockfd < 0) {
             perror("ERROR: cannot accept");
-            exit(1);
+            exit(EXIT_FAILURE);
         }
 
         /* fork process for multiple connections */
         pid = fork();
         if(pid < 0) {
             perror("Error: cannot fork");
-            exit(1);
+            exit(EXIT_FAILURE);
         }
         if(pid)
             close(newsockfd);
         else {
             close(sockfd);
             respond(newsockfd, path);
-            exit(0);
+            exit(EXIT_SUCCESS);
         }
     }
 }

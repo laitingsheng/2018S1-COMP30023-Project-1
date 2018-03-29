@@ -9,11 +9,15 @@
 
 void respond(int sockfd, const char *rootdir) {
     /* read bytes into buffer */
-    char *buff = malloc(BUFFER_SIZE + 1);
-    int re = read(sockfd, buff, BUFFER_SIZE);
-    if(re < 0)
+    char *buff = malloc(BUFFER_SIZE);
+    int re = read(sockfd, buff, BUFFER_SIZE - 1);
+    if(re < 0) {
         perror("ERROR: cannot read from socket");
-    else if(re == 0)
+        free(buff);
+        exit(EXIT_FAILURE);
+    }
+
+    if(re == 0)
         fprintf(stderr, "WARNING: client disconneted");
     else {
         /* set string ending */
@@ -42,12 +46,16 @@ void respond(int sockfd, const char *rootdir) {
             perror("ERROR:, cannot open file %d\n", buff);
 
             /* output 404 error */
-            write(sockfd, "HTTP/1.0 404 Not Found\n", 24);
-            return;
+            write(sockfd, "HTTP/1.0 404 Not Found\n", 23);
+            free(buff);
+            exit(EXIT_FAILURE);
         }
 
-        while((re = fread(buff, 1, )))
+        write(sockfd, "HTTP/1.0 200 OK", 19);
+        while((re = fread(buff, 1, BUFFER_SIZE, f)) != EOF)
+            write(sockfd, buff, re);
     }
 
     free(buff);
+    exit(EXIT_SUCCESS);
 }
