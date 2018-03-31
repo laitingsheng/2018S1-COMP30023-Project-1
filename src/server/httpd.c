@@ -58,6 +58,7 @@ void respond(int sockfd, const char *rootdir) {
         while((re = read(fd, buff, BUFFER_SIZE)) > 0)
             write(sockfd, buff, re);
         close(fd);
+        close(sockfd);
     }
 
     free(buff);
