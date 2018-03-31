@@ -1,3 +1,6 @@
+[submodule "COMP30023Assignment1TestScript"]
+	path = COMP30023Assignment1TestScript
+	url = git@gitlab.eng.unimelb.edu.au:cculnane/COMP30023Assignment1TestScript.git
 [submodule "tester"]
 	path = tester
 	url = git@gitlab.eng.unimelb.edu.au:cculnane/COMP30023Assignment1TestScript.git
