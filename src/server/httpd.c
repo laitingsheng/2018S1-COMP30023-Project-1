@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <fcntl.h>
 #include <unistd.h>
 
 void respond(int sockfd, const char *rootdir) {
@@ -39,11 +41,11 @@ void respond(int sockfd, const char *rootdir) {
         char path[lr + lu + 1];
         strcpy(path, rootdir);
         strcpy(path + lr, uri);
-        buff[lr + lu] = 0;
+        path[lr + lu] = 0;
 
         /* try to open the file */
-        FILE *f = fopen(path, "r");
-        if(!f) {
+        int fd = open(path, O_RDONLY);
+        if(fd < 0) {
             perror(path);
 
             /* output 404 error */
@@ -53,8 +55,9 @@ void respond(int sockfd, const char *rootdir) {
         }
 
         write(sockfd, "HTTP/1.0 200 OK\n", 19);
-        while((re = fread(buff, 1, BUFFER_SIZE, f)) > 0)
+        while((re = read(fd, buff, BUFFER_SIZE)) > 0)
             write(sockfd, buff, re);
+        close(fd);
     }
 
     free(buff);

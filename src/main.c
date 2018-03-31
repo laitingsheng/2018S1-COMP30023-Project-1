@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     char *path = PATH;
 
     if(argc == 2 && !strcmp(argv[1], "-h")) {
-        printf("Usage: server [port [default: %d]] [path [default: %s]]\n",
+        printf("Usage: %s [port [default: %d]] [path [default: %s]]\n", argv[0],
             PORT, PATH
         );
         return 0;
