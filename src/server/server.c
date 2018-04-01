@@ -16,7 +16,7 @@
 
 void serve(unsigned int port, const char *path) {
     /* create TCP socket */
-    int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd < 0) {
 		perror("ERROR");
         exit(EXIT_FAILURE);
