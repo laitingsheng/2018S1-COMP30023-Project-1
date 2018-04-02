@@ -1,6 +1,5 @@
 #include "httpd.h"
 #include "../macros/default.h"
-#include "../macros/MIME.h"
 
 #include <stdio.h>
 #include <stdlib.h>

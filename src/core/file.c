@@ -1,0 +1,45 @@
+#include "file.h"
+
+#include <stdio.h>
+
+/* incomplete list of known file types */
+static const struct {
+    const char *ext, *MIME_type;
+} MIME_types[] = {
+    {"css", "text/css"},
+    {"es", "application/ecmascript"},
+    {"gif", "image/gif"},
+    {"htm", "text/html"},
+    {"html", "text/html"},
+    {"ico", "image/x-icon"},
+    {"jpeg", "image/jpeg"},
+    {"jpg", "image/jpeg"},
+    {"js", "application/javascript"},
+    {"json", "application/json"},
+    {"pdf", "application/pdf"},
+    {"png", "image/png"}
+};
+#define NUM_DEFINED_MIME 12
+
+#define UNKNOWN "application/octet-stream";
+
+char *file_MIME(const char *restrict filename, char *restrict response) {
+    /* allow for filename such as file.name.ext */
+    const char *last_dot = NULL, *curr = filename;
+    while(*curr) {
+        if(*curr == '.')
+            last_dot = curr;
+        ++curr;
+    }
+
+    /* avoid case such as file. */
+    if(last_dot + 1 == curr)
+        last_dot = NULL;
+
+    const char *MIME_type = NULL;
+    if(last_dot) {
+        const char *ext = last_dot + 1;
+    }
+
+    return UNKNOWN;
+}

@@ -3,8 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "macros/default.h"
-#include "server/server.h"
+#include "core/default.h"
+#include "core/server.h"
 
 int main(int argc, char *argv[]) {
     int port = PORT;
