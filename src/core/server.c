@@ -61,7 +61,6 @@ void serve(unsigned int port, const char *path) {
         else {
             close(sockfd);
             respond(newsockfd, path);
-            _exit(EXIT_SUCCESS);
         }
 #endif
     }

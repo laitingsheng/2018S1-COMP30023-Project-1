@@ -19,11 +19,10 @@ static const struct {
     {"pdf", "application/pdf"},
     {"png", "image/png"}
 };
-#define NUM_DEFINED_MIME 12
+static const int NUM_DEFINED_MIME = 12;
+static const char *UNKNOWN = "application/octet-stream";
 
-#define UNKNOWN "application/octet-stream";
-
-char *file_MIME(const char *restrict filename, char *restrict response) {
+const char *file_MIME(const char *filename) {
     /* allow for filename such as file.name.ext */
     const char *last_dot = NULL, *curr = filename;
     while(*curr) {
@@ -39,6 +38,20 @@ char *file_MIME(const char *restrict filename, char *restrict response) {
     const char *MIME_type = NULL;
     if(last_dot) {
         const char *ext = last_dot + 1;
+
+        /* binary search */
+        int lo = 0, hi = NUM_DEFINED_MIME, mid, re;
+        while(lo < hi) {
+            mid = (lo + hi) / 2;
+
+            if((re = strcmp(ext, MIME_types[mid].ext)) == 0)
+                return MIME_types[mid].MIME_type;
+
+            if(re < 0)
+                hi = mid;
+            else
+                lo = mid + 1;
+        }
     }
 
     return UNKNOWN;
