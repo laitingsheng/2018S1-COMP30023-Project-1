@@ -12,6 +12,15 @@
 
 #ifdef _PTHREAD
 #include <pthread.h>
+
+struct serve_thread_args {
+    const unsigned int port;
+    const char * const path;
+}
+
+static void *serve_thread(void *arg) {
+    ;
+}
 #endif
 
 void serve(unsigned int port, const char *path) {
@@ -37,12 +46,15 @@ void serve(unsigned int port, const char *path) {
 
     /* starting listening */
     listen(sockfd, 5);
-    struct sockaddr_in cli_addr;
-    int newsockfd, clilen = sizeof(cli_addr), pid;
-    while(true) {
-#ifdef _PTHREAD
-        printf("\n");
+
+#ifdef _PTHREAD /* fork works better on single core */
+    serve_thread_args arg = {port, path};
 #else
+    struct sockaddr_in cli_addr;
+    socklen_t clilen = sizeof(cli_addr);
+    int newsockfd;
+    pid_t pid;
+    while(true) {
         /* accept client connection */
         newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if(newsockfd < 0) {
@@ -62,6 +74,6 @@ void serve(unsigned int port, const char *path) {
             close(sockfd);
             respond(newsockfd, path);
         }
-#endif
     }
+#endif
 }

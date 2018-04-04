@@ -1,6 +1,7 @@
 #include "file.h"
 
 #include <stdio.h>
+#include <string.h>
 
 /* incomplete list of known file types */
 static const struct {
@@ -35,7 +36,6 @@ const char *file_MIME(const char *filename) {
     if(last_dot + 1 == curr)
         last_dot = NULL;
 
-    const char *MIME_type = NULL;
     if(last_dot) {
         const char *ext = last_dot + 1;
 

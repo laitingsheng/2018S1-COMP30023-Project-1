@@ -26,7 +26,8 @@ void respond(int sockfd, const char *rootdir) {
         buff[re] = 0;
 
         /* parse the request */
-        char *method = strtok(buff, " "), *uri = strtok(NULL, " ");
+        char *method = strtok(buff, " "), *uri = strtok(NULL, " "),
+             *protocal = strtok(NULL, " \t\r\n");
 
         /* simple GET method */
         if(strcmp(method, "GET")) {
@@ -45,11 +46,12 @@ void respond(int sockfd, const char *rootdir) {
 
         /* try to open the file */
         int fd = open(path, O_RDONLY);
-        if(fd < 0)
+        if(fd < 0) {
             /* output 404 error */
-            write(sockfd, "HTTP/1.0 404 Not Found\n", 23);
-        else {
-            sprintf(buff, "HTTP/1.0 200 OK\nContent-Type: %s\n\n",
+            sprintf(buff, "%s 404 Not Found\n", protocal);
+            write(sockfd, buff, strlen(buff));
+        } else {
+            sprintf(buff, "%s 200 OK\nContent-Type: %s\n\n", protocal,
                     file_MIME(uri));
             write(sockfd, buff, strlen(buff));
             while((re = read(fd, buff, BUFFER_SIZE)) > 0)
