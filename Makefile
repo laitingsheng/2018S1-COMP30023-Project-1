@@ -3,6 +3,7 @@ CFLAGS  = -O3 -Wall -Wextra -Wpedantic
 EXE     = server
 OBJ     = bin/main.o bin/core/file.o bin/core/httpd.o
 
+# fork works better on single core, but still supports multithreading
 $(EXE): mkdir $(OBJ)
 	$(CC) $(CFLAGS) -c -o bin/core/server.o src/core/server.c
 	$(CC) $(CFLAGS) -o $@ $(OBJ) bin/core/server.o

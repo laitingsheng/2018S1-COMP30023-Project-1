@@ -13,13 +13,15 @@
 #ifdef _PTHREAD
 #include <pthread.h>
 
-struct serve_thread_args {
+typedef struct {
     const unsigned int port;
     const char * const path;
-}
+} serve_thread_args_t;
 
 static void *serve_thread(void *arg) {
-    ;
+    const char *path = arg;
+    struct sockaddr_in cli_addr;
+    socklen_t clilen = sizeof(cli_addr);
 }
 #endif
 
@@ -31,7 +33,7 @@ void serve(unsigned int port, const char *path) {
         exit(EXIT_FAILURE);
     }
 
-    /* initialise socket structure */
+    /* initialise listening socket */
     struct sockaddr_in serv_addr;
     bzero((char *)&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
@@ -44,11 +46,10 @@ void serve(unsigned int port, const char *path) {
         exit(EXIT_FAILURE);
     }
 
-    /* starting listening */
+    /* start listening */
     listen(sockfd, 5);
 
-#ifdef _PTHREAD /* fork works better on single core */
-    serve_thread_args arg = {port, path};
+#ifdef _PTHREAD
 #else
     struct sockaddr_in cli_addr;
     socklen_t clilen = sizeof(cli_addr);
