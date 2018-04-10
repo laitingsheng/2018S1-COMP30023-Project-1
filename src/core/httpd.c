@@ -61,5 +61,4 @@ void respond(int sockfd, const char *rootdir) {
     }
 
     free(buff);
-    exit(EXIT_SUCCESS);
 }

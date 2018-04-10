@@ -19,6 +19,8 @@ typedef struct {
 static void *serve_thread(void *arg) {
     serve_thread_args_t *args = arg;
     respond(args->clifd, args->path);
+    close(args->clifd);
+    free(arg);
     return NULL;
 }
 
@@ -62,9 +64,10 @@ void serve(unsigned int port, const char *path) {
         args->path = path;
         args->clifd = clifd;
 
-        if(!pthread_create(&pid, NULL, serve_thread, args)) {
+        if(pthread_create(&pid, NULL, serve_thread, args))
             perror("pthread_create");
-            exit(EXIT_FAILURE);
-        }
+        pthread_detach(pid);
     }
+
+    close(listenfd);
 }
