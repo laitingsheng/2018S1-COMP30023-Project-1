@@ -8,28 +8,25 @@
 
 #include <netdb.h>
 #include <netinet/in.h>
+#include <pthread.h>
 #include <unistd.h>
 
-#ifdef _PTHREAD
-#include <pthread.h>
-
 typedef struct {
-    const unsigned int port;
-    const char * const path;
+    const char * path;
+    int clifd;
 } serve_thread_args_t;
 
 static void *serve_thread(void *arg) {
-    const char *path = arg;
-    struct sockaddr_in cli_addr;
-    socklen_t clilen = sizeof(cli_addr);
+    serve_thread_args_t *args = arg;
+    respond(args->clifd, args->path);
+    return NULL;
 }
-#endif
 
 void serve(unsigned int port, const char *path) {
     /* create TCP socket */
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sockfd < 0) {
-		perror("ERROR");
+    int listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    if(listenfd < 0) {
+		perror("socket");
         exit(EXIT_FAILURE);
     }
 
@@ -41,40 +38,33 @@ void serve(unsigned int port, const char *path) {
     serv_addr.sin_port = htons(port);
 
     /* bind the host address */
-    if(bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-        perror("ERROR");
+    if(bind(listenfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        perror("bind");
         exit(EXIT_FAILURE);
     }
 
     /* start listening */
-    listen(sockfd, 5);
-
-#ifdef _PTHREAD
-#else
+    listen(listenfd, 5);
     struct sockaddr_in cli_addr;
     socklen_t clilen = sizeof(cli_addr);
-    int newsockfd;
-    pid_t pid;
+    int clifd;
+    pthread_t pid;
+    serve_thread_args_t *args;
     while(true) {
         /* accept client connection */
-        newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-        if(newsockfd < 0) {
-            perror("ERROR");
+        clifd = accept(listenfd, (struct sockaddr *)&cli_addr, &clilen);
+        if(clifd < 0) {
+            perror("accept");
             exit(EXIT_FAILURE);
         }
 
-        /* fork process for multiple connections */
-        pid = fork();
-        if(pid < 0) {
-            perror("ERROR");
+        args = malloc(sizeof(serve_thread_args_t));
+        args->path = path;
+        args->clifd = clifd;
+
+        if(!pthread_create(&pid, NULL, serve_thread, args)) {
+            perror("pthread_create");
             exit(EXIT_FAILURE);
         }
-        if(pid)
-            close(newsockfd);
-        else {
-            close(sockfd);
-            respond(newsockfd, path);
-        }
     }
-#endif
 }
