@@ -18,9 +18,10 @@ static const struct {
     {"js", "application/javascript"},
     {"json", "application/json"},
     {"pdf", "application/pdf"},
-    {"png", "image/png"}
+    {"png", "image/png"},
+    {"txt", "text/plain"}
 };
-static const int NUM_DEFINED_MIME = 12;
+static const int NUM_DEFINED_MIME = 13;
 static const char *UNKNOWN = "application/octet-stream";
 
 const char *file_MIME(const char *filename) {
