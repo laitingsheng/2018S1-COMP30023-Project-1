@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -O3 -Wall -Wextra -Wpedantic
+CFLAGS  = -O3 -std=c99 -Wall -Wextra -Wpedantic
 EXE     = server
 OBJ     = bin/main.o bin/core/file.o bin/core/httpd.o bin/core/server.o
 

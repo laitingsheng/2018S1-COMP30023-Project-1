@@ -4,14 +4,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 void respond(int sockfd, const char *rootdir) {
     /* read bytes into buffer */
-    char *buff = malloc(BUFFER_SIZE);
+    char buff[BUFFER_SIZE];
     int re = read(sockfd, buff, BUFFER_SIZE - 1);
     if(re < 0) {
         perror("ERROR");
@@ -30,12 +32,8 @@ void respond(int sockfd, const char *rootdir) {
              *protocal = strtok(NULL, " \t\r\n");
 
         /* simple GET method */
-        if(strcmp(method, "GET")) {
+        if(strcmp(method, "GET"))
             fprintf(stderr, "WARNING: not a GET method\n");
-
-            /* send the index.html instead */
-            uri = "/index.html";
-        }
 
         /* get the path of the file */
         int lr = strlen(rootdir), lu = strlen(uri);
@@ -44,21 +42,44 @@ void respond(int sockfd, const char *rootdir) {
         strcpy(path + lr, uri);
         path[lr + lu] = 0;
 
-        /* try to open the file */
-        int fd = open(path, O_RDONLY);
-        if(fd < 0) {
+        /* try to obtain stat without opening the file */
+        struct stat fs;
+        int wr, lbuff;
+        if(stat(path, &fs)) {
             /* output 404 error */
             sprintf(buff, "%s 404 Not Found\n", protocal);
-            write(sockfd, buff, strlen(buff));
+            lbuff = strlen(buff);
+
+            /* handle broken pipe */
+            wr = write(sockfd, buff, lbuff);
+            if(wr < lbuff - 1)
+                fprintf(stderr, "WARNING: client terminated connection\n");
         } else {
-            sprintf(buff, "%s 200 OK\nContent-Type: %s\n\n", protocal,
-                    file_MIME(uri));
-            write(sockfd, buff, strlen(buff));
-            while((re = read(fd, buff, BUFFER_SIZE)) > 0)
-                write(sockfd, buff, re);
+            int fd = open(path, O_RDONLY);
+            sprintf(buff,
+                "%s 200 OK\r\nContent-Type: %s\r\nContent-Length: %lld\r\n\r\n",
+                protocal, file_MIME(uri), fs.st_size
+            );
+            lbuff = strlen(buff);
+
+            /* handle broken pipe */
+            wr = write(sockfd, buff, lbuff);
+            if(wr < lbuff - 1) {
+                fprintf(stderr, "WARNING: client terminated connection\n");
+                close(fd);
+                return;
+            }
+
+            while((re = read(fd, buff, BUFFER_SIZE)) > 0) {
+                /* handle broken pipe */
+                wr = write(sockfd, buff, re);
+                if(wr < re) {
+                    fprintf(stderr, "WARNING: client terminated connection\n");
+                    close(fd);
+                    return;
+                }
+            }
             close(fd);
         }
     }
-
-    free(buff);
 }

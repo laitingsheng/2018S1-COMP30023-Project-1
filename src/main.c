@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <signal.h>
+
 #include "core/default.h"
 #include "core/server.h"
 
@@ -23,6 +25,10 @@ int main(int argc, char *argv[]) {
     if(argc > 2)
         path = argv[2];
 
+    /* ignore the broken pipe signal */
+    signal(SIGPIPE, SIG_IGN);
+
+    /* start server */
     serve(port, path);
 
     return 0;
