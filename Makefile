@@ -13,7 +13,7 @@ bin/core/file.o: src/core/file.c
 bin/core/httpd.o: src/core/httpd.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 bin/core/server.o: src/core/server.c
-	$(CC) $(CFLAGS) -c -o bin/core/server.o src/core/server.c
+	$(CC) $(CFLAGS) -lpthread -c -o bin/core/server.o src/core/server.c
 
 mkdir:
 	mkdir -p bin/core
