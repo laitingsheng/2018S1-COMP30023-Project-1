@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 typedef struct {
-    const char * path;
+    const char *path;
     int clifd;
 } serve_thread_args_t;
 
