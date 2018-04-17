@@ -12,6 +12,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+static const char *HTTP_404 = "HTTP/1.0 404 Not Found\r\n\
+Content-Type: text/html\r\n\r\n\
+<html><h1>File Not Found<h1></html>";
+static const int HTTP_404L = 86;
+
 void respond(int sockfd, const char *rootdir) {
     /* read bytes into buffer */
     char buff[BUFFER_SIZE];
@@ -28,8 +33,7 @@ void respond(int sockfd, const char *rootdir) {
         buff[re] = 0;
 
         /* parse the request */
-        char *method = strtok(buff, " "), *uri = strtok(NULL, " "),
-             *protocal = strtok(NULL, " \t\r\n");
+        char *method = strtok(buff, " "), *uri = strtok(NULL, " ");
 
         /* simple GET method */
         if(strcmp(method, "GET"))
@@ -46,13 +50,9 @@ void respond(int sockfd, const char *rootdir) {
         struct stat fs;
         int wr, lbuff;
         if(stat(path, &fs)) {
-            /* output 404 error */
-            sprintf(buff, "%s 404 Not Found\n", protocal);
-            lbuff = strlen(buff);
-
-            /* handle broken pipe */
-            wr = write(sockfd, buff, lbuff);
-            if(wr < lbuff)
+            /* output 404 error and handle broken pipe */
+            wr = write(sockfd, HTTP_404, HTTP_404L);
+            if(wr < HTTP_404L)
                 fprintf(stderr, "WARNING: client terminated connection\n");
         } else {
             int fd = open(path, O_RDONLY);
@@ -63,13 +63,13 @@ void respond(int sockfd, const char *rootdir) {
  */
 #if defined __APPLE__
             sprintf(buff,
-                "%s 200 OK\r\nContent-Type: %s\r\nContent-Length: %lld\r\n\r\n",
-                protocal, file_MIME(uri), fs.st_size
+                "HTTP/1.0 200 OK\r\nContent-Type: %s\r\nContent-Length: %lld\r\n\r\n",
+                file_MIME(uri), fs.st_size
             );
 #elif defined __linux__
             sprintf(buff,
-                "%s 200 OK\r\nContent-Type: %s\r\nContent-Length: %ld\r\n\r\n",
-                protocal, file_MIME(uri), fs.st_size
+                "HTTP/1.0 200 OK\r\nContent-Type: %s\r\nContent-Length: %ld\r\n\r\n",
+                file_MIME(uri), fs.st_size
             );
 #else
 #error "not supported"
