@@ -52,10 +52,15 @@ void respond(int sockfd, const char *rootdir) {
 
             /* handle broken pipe */
             wr = write(sockfd, buff, lbuff);
-            if(wr < lbuff - 1)
+            if(wr < lbuff)
                 fprintf(stderr, "WARNING: client terminated connection\n");
         } else {
             int fd = open(path, O_RDONLY);
+
+/*
+ * since stat.st_size is defined as "long long" on macOS High Sierra but "long"
+ * on Ubuntu Xenial (16.04)
+ */
 #if defined __APPLE__
             sprintf(buff,
                 "%s 200 OK\r\nContent-Type: %s\r\nContent-Length: %lld\r\n\r\n",
@@ -69,11 +74,12 @@ void respond(int sockfd, const char *rootdir) {
 #else
 #error "not supported"
 #endif
+
             lbuff = strlen(buff);
 
             /* handle broken pipe */
             wr = write(sockfd, buff, lbuff);
-            if(wr < lbuff - 1) {
+            if(wr < lbuff) {
                 fprintf(stderr, "WARNING: client terminated connection\n");
                 close(fd);
                 return;
