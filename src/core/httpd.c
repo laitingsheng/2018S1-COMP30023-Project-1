@@ -17,7 +17,6 @@ void respond(int sockfd, const char *rootdir) {
     int re = read(sockfd, buff, BUFFER_SIZE - 1);
     if(re < 0) {
         perror("ERROR");
-        free(buff);
         exit(EXIT_FAILURE);
     }
 
@@ -56,10 +55,19 @@ void respond(int sockfd, const char *rootdir) {
                 fprintf(stderr, "WARNING: client terminated connection\n");
         } else {
             int fd = open(path, O_RDONLY);
+#if defined __APPLE__
             sprintf(buff,
                 "%s 200 OK\r\nContent-Type: %s\r\nContent-Length: %lld\r\n\r\n",
                 protocal, file_MIME(uri), fs.st_size
             );
+#elif defined __linux__
+            sprintf(buff,
+                "%s 200 OK\r\nContent-Type: %s\r\nContent-Length: %ld\r\n\r\n",
+                protocal, file_MIME(uri), fs.st_size
+            );
+#else
+#error "not supported"
+#endif
             lbuff = strlen(buff);
 
             /* handle broken pipe */
