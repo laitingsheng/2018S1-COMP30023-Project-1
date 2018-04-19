@@ -1,3 +1,8 @@
+################################################################################
+# Makefile for the project
+# Create by Tingsheng Lai (tingshengl, 781319)
+################################################################################
+
 CC      = gcc
 CFLAGS  = -O3 -std=c99 -Wall -Wextra -Wpedantic
 EXE     = server

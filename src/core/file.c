@@ -1,3 +1,8 @@
+/*
+ * Responsible for parsing the filename to get an appropriate MIME type
+ * Create by Tingsheng Lai (tingshengl, 781319)
+ */
+
 #include "file.h"
 
 #include <stdio.h>

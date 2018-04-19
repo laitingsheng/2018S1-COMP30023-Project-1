@@ -1,3 +1,8 @@
+/*
+ * Responsible for responding to the client
+ * Create by Tingsheng Lai (tingshengl, 781319)
+ */
+
 #include "httpd.h"
 #include "default.h"
 #include "file.h"
@@ -13,7 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static const char *HTTP_404 = "HTTP/1.0 404 Not Found\r\n\
+static const char * const HTTP_404 = "HTTP/1.0 404 Not Found\r\n\
 Content-Type: text/html\r\n\r\n\
 <html><h1>File Not Found<h1></html>";
 static const int HTTP_404L = 86;

@@ -1,3 +1,8 @@
+/*
+ * Responsible for monitoring the incoming connection
+ * Create by Tingsheng Lai (tingshengl, 781319)
+ */
+
 #include "server.h"
 #include "httpd.h"
 

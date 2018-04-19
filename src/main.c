@@ -1,3 +1,8 @@
+/*
+ * The main part for execution
+ * Create by Tingsheng Lai (tingshengl, 781319)
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
