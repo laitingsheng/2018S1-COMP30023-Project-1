@@ -6,5 +6,3 @@ before_script:
 server:
     script:
         - make
-        - cd tester && ./test_script.sh ../server 8080
-        - cd ..
