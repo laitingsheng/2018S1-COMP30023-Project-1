@@ -1,0 +1,8 @@
+before_script:
+    - apt-get -q update && apt-get -yq install make gcc
+    - gcc --version
+    - make --version
+
+server:
+    script:
+        - make
