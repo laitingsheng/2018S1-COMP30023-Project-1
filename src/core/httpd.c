@@ -9,6 +9,7 @@
 #include <strings.h>
 
 #include <fcntl.h>
+#include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -85,15 +86,11 @@ void respond(int sockfd, const char *rootdir) {
                 return;
             }
 
-            while((re = read(fd, buff, BUFFER_SIZE)) > 0) {
-                /* handle broken pipe */
-                wr = write(sockfd, buff, re);
-                if(wr < re) {
-                    fprintf(stderr, "WARNING: client terminated connection\n");
-                    close(fd);
-                    return;
-                }
-            }
+            do {
+                re = sendfile(sockfd, fd, NULL, BUFFER_SIZE);
+            } while(re > 0);
+            if(re == -1)
+                perror("sendfile");
             close(fd);
         }
     }
